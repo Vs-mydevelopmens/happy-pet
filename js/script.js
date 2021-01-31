@@ -1,126 +1,3 @@
-
-const popupLinks = document.querySelectorAll('.popup-link');
-const body = document.querySelector('body');
-const lockPadding = document.querySelectorAll('.lock-padding');
-
-let unlock = true;
-
-const timeout = 600;
-
-if (popupLinks.length > 0) {
-	for (let index = 0; index < popupLinks.length; index++) {
-		const popupLink = popupLinks[index];
-		popupLink.addEventListener("click", function (e) {
-			const popupName = popupLink.getAttribute('href').replace('#', '');
-			const curentPopup = document.getElementById(popupName);
-			popupOpen(curentPopup);
-			e.preventDefault();
-		});
-	}
-}
-const popupCloseIcon = document.querySelectorAll('.close-popup');
-if (popupCloseIcon.length > 0) {
-	for (let index = 0; index < popupCloseIcon.length; index++) {
-		const el = popupCloseIcon[index];
-		el.addEventListener('click', function (e) {
-			popupClose(el.closest('.popup'));
-			e.preventDefault();
-		});
-	}
-}
-
-function popupOpen(curentPopup) {
-	if (curentPopup && unlock) {
-		const popupActive = document.querySelector('.popup.open');
-		if (popupActive) {
-			popupClose(popupActive, false);
-		} else {
-			bodyLock();
-		}
-		curentPopup.classList.add('open');
-		curentPopup.addEventListener("click", function (e) {
-			if (!e.target.closest('.popup__content')) {
-				popupClose(e.target.closest('.popup'));
-			}
-		});
-	}
-}
-function popupClose(popupActive, doUnlock = true) {
-	if (unlock) {
-		popupActive.classList.remove('open');
-		if (doUnlock) {
-			bodyUnlock();
-		}
-	}
-}
-
-function bodyLock() {
-	const lockPaddingValue = window.innerWidth - document.querySelector('.wrapper').offsetWidth + 'px';
-
-	if (lockPadding.length > 0) {
-		for (let index = 0; index < lockPadding.length; index++) {
-			const el = lockPadding[index];
-			el.style.paddingRight = lockPaddingValue;
-		}
-	}
-	body.style.paddingRight = lockPaddingValue;
-	body.classList.add('lock');
-
-	unlock = false;
-	setTimeout(function () {
-		unlock = true;
-	}, timeout);
-}
-
-function bodyUnlock() {
-	setTimeout(function () {
-		for (let index = 0; index < lockPadding.length; index++) {
-			const el = lockPadding[index];
-			el.style.paddingRight = '0px';
-		}
-		body.style.paddingRight = '0px';
-		body.classList.remove('lock');
-	}, timeout);
-
-	unlock = false;
-	setTimeout(function () {
-		unlock = true;
-	}, timeout);
-}
-
-
-
-document.addEventListener('keydown', function (e) {
-	if (e.which === 27) {
-		const popupActive = document.querySelector('.popup.open');
-		popupClose(popupActive);
-	}
-});
-
-(function () {
-	// проверяем поддержку
-	if (!Element.prototype.closest) {
-		// руализуем
-		Element.prototype.closest = function (css) {
-			var node = this;
-			while (node) {
-				if (node.matches(css)) return node;
-				else node = node.parentElement;
-			}
-			return null;
-		};
-	}
-})();
-(function () {
-	//проверяем поддержку
-	if (!Element.prototype.matches) {
-		// определяем свойство
-		Element.prototype.matches = Element.prototype.matchesSelector ||
-			Element.prototype.webkitMatchesSelector ||
-			Element.prototype.mozMatchesSelector ||
-			Element.prototype.msMatchesSelector;
-	}
-})();
 $(document).ready(function () {
 	$('.header__burger').click(function (event) {
 		$('.header__burger,.header__menu').toggleClass('active');
@@ -288,6 +165,68 @@ DynamicAdapt.prototype.arraySort = function (arr) {
 
 const da = new DynamicAdapt("max");
 da.init();
+var $tabs = function (target) {
+	var
+		_elemTabs = (typeof target === 'string' ? document.querySelector(target) : target),
+		_eventTabsShow,
+		_showTab = function (tabsLinkTarget) {
+			var tabsPaneTarget, tabsLinkActive, tabsPaneShow;
+			tabsPaneTarget = document.querySelector(tabsLinkTarget.getAttribute('href'));
+			tabsLinkActive = tabsLinkTarget.parentElement.querySelector('.tabs__link_active');
+			tabsPaneShow = tabsPaneTarget.parentElement.querySelector('.tabs-block_show');
+			// если следующая вкладка равна активной, то завершаем работу
+			if (tabsLinkTarget === tabsLinkActive) {
+				return;
+			}
+			// удаляем классы у текущих активных элементов
+			if (tabsLinkActive !== null) {
+				tabsLinkActive.classList.remove('tabs__link_active');
+			}
+			if (tabsPaneShow !== null) {
+				tabsPaneShow.classList.remove('tabs-block_show');
+			}
+			// добавляем классы к элементам (в завимости от выбранной вкладки)
+			tabsLinkTarget.classList.add('tabs__link_active');
+			tabsPaneTarget.classList.add('tabs-block_show');
+			document.dispatchEvent(_eventTabsShow);
+		},
+		_switchTabTo = function (tabsLinkIndex) {
+			var tabsLinks = _elemTabs.querySelectorAll('.tabs__item');
+			if (tabsLinks.length > 0) {
+				if (tabsLinkIndex > tabsLinks.length) {
+					tabsLinkIndex = tabsLinks.length;
+				} else if (tabsLinkIndex < 1) {
+					tabsLinkIndex = 1;
+				}
+				_showTab(tabsLinks[tabsLinkIndex - 1]);
+			}
+		};
+
+	_eventTabsShow = new CustomEvent('tab.show', { detail: _elemTabs });
+
+	_elemTabs.addEventListener('click', function (e) {
+		var tabsLinkTarget = e.target;
+		// завершаем выполнение функции, если кликнули не по ссылке
+		if (!tabsLinkTarget.classList.contains('tabs__item')) {
+			return;
+		}
+		// отменяем стандартное действие
+		e.preventDefault();
+		_showTab(tabsLinkTarget);
+	});
+
+	return {
+		showTab: function (target) {
+			_showTab(target);
+		},
+		switchTabTo: function (index) {
+			_switchTabTo(index);
+		}
+	}
+
+};
+
+$tabs('.tabs');
 // BildSlider
 let sliders = document.querySelectorAll('._swiper');
 if (sliders) {
@@ -314,9 +253,12 @@ if (sliders) {
 		}
 	}
 	slider_bild_callback();
+
 }
 
 function slider_bild_callback(params) { }
+
+
 
 let headerSlider = new Swiper('.header-slider__item', {
 
@@ -382,66 +324,108 @@ let headerSlider = new Swiper('.header-slider__item', {
 	// },
 });
 // ==========================================
-
-let tabsSlider = new Swiper('.tabs-content', {
-
-	// effect: 'fade',
-	autoplay: {
-		delay: 3000,
-		disableOnInteraction: false,
-	},
-
-	observer: true,
-	observeParents: true,
-	observeSlideChildren: true,
-	slidesPerView: 3,
-	spaceBetween: 30,
-	// autoHeight: true,
-	speed: 800,
-	// touchRatio: 0,
-	// simulateTouch: false,
-	loop: true,
-	// lazy: true,
-	preloadImages: false,
-	// dotts
-	pagination: {
-		el: '.tabs-slider-pagination',
-		clickable: true,
-	},
-	// Arrows
-	navigation: {
-		nextEl: '.tabs-slider-arrow__next',
-		prevEl: '.tabs-slider-arrow__prev',
-	},
-	breakpoints: {
-		320: {
-			slidesPerView: 1,
-			spaceBetween: 10,
-			autoHeight: true,
-		},
-		768: {
-			slidesPerView: 2,
-			spaceBetween: 14,
-		},
-		992: {
+$(document).ready(
+	function () {
+		let tabsSlider = new Swiper('.tabs-content', {
+			observer: true,
+			observeParents: true,
+			// effect: 'fade',
+			autoplay: {
+				delay: 3000,
+				disableOnInteraction: false,
+			},
 			slidesPerView: 3,
-			spaceBetween: 20,
-		},
-		1268: {
-			slidesPerView: 3,
-			spaceBetween: 24,
-		},
-	},
-	// on: {
-	// 	lazyImageReady: function () {
-	// 		ibg();
-	// 	},
-	// },
-	// And if we need scroLLbar
-	// Scrollbar: {
-	// 	el: '.swiper-scrollbar',
-	// },
-});
+			spaceBetween: 30,
+			// autoHeight: true,
+			speed: 800,
+			// touchRatio: 0,
+			// simulateTouch: false,
+			loop: true,
+			// lazy: true,
+			preloadImages: false,
+			// dotts
+			pagination: {
+				el: '.swiper-pagination',
+				clickable: true,
+			},
+			// Arrows
+			navigation: {
+				nextEl: '.tabs-slider-arrow__next',
+				prevEl: '.tabs-slider-arrow__prev',
+			},
+			breakpoints: {
+				320: {
+					slidesPerView: 1,
+					spaceBetween: 10,
+					autoHeight: true,
+				},
+				768: {
+					slidesPerView: 2,
+					spaceBetween: 14,
+				},
+				992: {
+					slidesPerView: 3,
+					spaceBetween: 20,
+				},
+				1268: {
+					slidesPerView: 3,
+					spaceBetween: 24,
+				},
+			},
+
+			on: {
+				lazyImageReady: function () {
+					ibg();
+				},
+			},
+			// And if we need scroLLbar
+			// Scrollbar: {
+			// 	el: '.swiper-scrollbar',
+			// },
+
+
+		});
+
+	});
+
+
+
+const animItems = document.querySelectorAll('._anim-items');
+
+if (animItems.length > 0) {
+	window.addEventListener('scroll', animOnScroll);
+	function animOnScroll() {
+		for (let index = 0; index < animItems.length; index++) {
+			const animItem = animItems[index];
+			const animItemHeight = animItem.offsetHeight;
+			const animItemOffset = offset(animItem).top;
+			const animStart = 4;
+
+			let animItemPoint = window.innerHeight - animItemHeight / animStart;
+			if (animItemHeight > window.innerHeight) {
+				animItemPoint = window.innerHeight - window.innerHeight / animStart;
+			}
+
+			if ((pageYOffset > animItemOffset - animItemPoint) && pageYOffset < (animItemOffset + animItemHeight)) {
+				animItem.classList.add('scroll_active');
+			} else {
+				if (!animItem.classList.contains('_anim-no-hide')) {
+					animItem.classList.remove('scroll_active');
+				}
+			}
+		}
+	}
+	function offset(el) {
+		const rect = el.getBoundingClientRect(),
+			scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+			scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+		return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+	}
+
+	setTimeout(() => {
+		animOnScroll();
+	}, 300);
+}
 
 // ==========================================
 // <КАРТОЧКА КОРЗИНЫ ШАПКИ САЙТА>
@@ -457,23 +441,173 @@ cartLink.addEventListener("click", function (e) {
 // ==========================================
 
 // ==========================================
+// <ПЛАВНЫЙ СКРОЛЛ ЯКОРНЫХ ССЫЛОК>
+// ==========================================
+// функция скролла
+function scrollIt(
+    destination,
+    duration = 200,
+    easing = "linear",
+    callback
+) {
+    const easings = {
+        linear(t) {
+            return t;
+        },
+        easeInQuad(t) {
+            return t * t;
+        },
+        easeOutQuad(t) {
+            return t * (2 - t);
+        },
+        easeInOutQuad(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        },
+        easeInCubic(t) {
+            return t * t * t;
+        },
+        easeOutCubic(t) {
+            return --t * t * t + 1;
+        },
+        easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+        },
+        easeInQuart(t) {
+            return t * t * t * t;
+        },
+        easeOutQuart(t) {
+            return 1 - --t * t * t * t;
+        },
+        easeInOutQuart(t) {
+            return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * --t * t * t * t;
+        },
+        easeInQuint(t) {
+            return t * t * t * t * t;
+        },
+        easeOutQuint(t) {
+            return 1 + --t * t * t * t * t;
+        },
+        easeInOutQuint(t) {
+            return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * --t * t * t * t * t;
+        }
+    };
+
+    // Определение координаты элемента по вертикали от начала документа
+    function pageY(elem) {
+        return elem.offsetParent
+            ? elem.offsetTop + pageY(elem.offsetParent)
+            : elem.offsetTop;
+    }
+
+    const start = window.pageYOffset;
+    const startTime =
+        "now" in window.performance ? performance.now() : new Date().getTime();
+
+    const documentHeight = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight
+    );
+    const windowHeight =
+        window.innerHeight ||
+        document.documentElement.clientHeight ||
+        document.getElementsByTagName("body")[0].clientHeight;
+    const destinationOffset =
+        typeof destination === "number" ? destination : pageY(destination);
+    const destinationOffsetToScroll = Math.round(
+        documentHeight - destinationOffset < windowHeight
+            ? documentHeight - windowHeight
+            : destinationOffset
+    );
+
+    if ("requestAnimationFrame" in window === false) {
+        window.scroll(0, destinationOffsetToScroll);
+        if (callback) {
+            callback();
+        }
+        return;
+    }
+
+    function scroll() {
+        const now =
+            "now" in window.performance ? performance.now() : new Date().getTime();
+        const time = Math.min(1, (now - startTime) / duration);
+        const timeFunction = easings[easing](time);
+        // эта функция скролит по чуть чуть
+        window.scroll(
+            0,
+            Math.ceil(timeFunction * (destinationOffsetToScroll - start) + start)
+        );
+        //усоловие если время истекло, то поставь в конечную точку анимации
+        if (duration <= now - startTime) {
+            return;
+        }
+        // это условие проверяет условие кончилась ли аницация. в данном случае проверяет дошли ли до точки назначения
+        if (window.pageYOffset === destinationOffsetToScroll) {
+            if (callback) {
+                callback();
+            }
+            return;
+        }
+        // эта функция запускает следующую итерацию анимации
+        requestAnimationFrame(scroll);
+    }
+
+    scroll();
+}
+
+
+
+friends.addEventListener('click', () => {
+    scrollIt(catalog, 800, 'linear', () => { console.log("скролл завершился") });
+});
+
+aboutUs.addEventListener('click', () => {
+    scrollIt(about, 800, 'linear', () => { console.log("скролл завершился") });
+});
+
+contacts.addEventListener('click', () => {
+    scrollIt(contact, 800, 'linear', () => { console.log("скролл завершился") });
+});
+
+showCatalog.addEventListener('click', () => {
+    scrollIt(catalog, 800, 'linear', () => { console.log("скролл завершился") });
+});
+
+topScroll.addEventListener('click', () => {
+    scrollIt(header, 800, 'linear', () => { console.log("скролл завершился") });
+});
+// ==========================================
+// </ПЛАВНЫЙ СКРОЛЛ ЯКОРНЫХ ССЫЛОК>
+// ==========================================
+
+
+
+// ==========================================
 // <ВЫДЕЛЕНИЕ АКТИВНОГО МЕНЮ>
 // ==========================================
-$('.tabs__item').click(function () {
-    $('.active').removeClass('active');
-    $(this).addClass('active');
+let checkLink = document.querySelector('.contact-body__check');
+checkLink.addEventListener("click", function (e) {
+    checkLink.classList.toggle('check-active');
+});
+// ==========================================
+let checked = document.querySelector('.contact-body__click');
+checked.addEventListener("click", function (e) {
+    checked.classList.toggle('check-active');
 });
 // ==========================================
 // Toggle active link
-const links = document.querySelectorAll('.header__menu a')
+const links = document.querySelectorAll('.header__menu a');
 
 links.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault()
-        links.forEach(other => other.classList.remove('is-active'))
-        link.classList.add('is-active')
-    })
-})
+        links.forEach(other => other.classList.remove('is-active'));
+        link.classList.add('is-active');
+    });
+});
 // ==========================================
 // </ВЫДЕЛЕНИЕ АКТИВНОГО МЕНЮ>
 // ==========================================
@@ -511,25 +645,7 @@ function ibg() {
     }
 }
 ibg();
-
-// function ibg() {
-//     $.each($('.ibg'), function (index, val) {
-//         if ($(this).find('img').length > 0) {
-//             $(this).css('background-image', 'url("' + $(this).find('img').attr('src') + '")');
-//         }
-//     });
-// }
-// ibg();
 // ==========================================
 // <2 СКРИПТА НА ИЗОБРАЖЕНИЯ>
 // ==========================================
 
-// ==========================================
-// <SWIPER SLIDER INIT>
-// ==========================================
-
-// ==========================================
-
-// ==========================================
-// </SWIPER SLIDER INIT>
-// ==========================================
