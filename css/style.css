@@ -156,6 +156,7 @@ body {
   font-size: 15px;
   color: #000000;
   font-family: "Roboto", serif;
+  scroll-behavior: smooth;
 }
 
 body.lock {
@@ -1009,6 +1010,7 @@ body.lock {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  margin-top: calc(20px + 20 * ((100vw - 320px) / 1280));
 }
 
 .tabs-slider .swiper-pagination {
@@ -1150,7 +1152,6 @@ body.lock {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  min-height: 100%;
   margin: 16px;
 }
 
@@ -1160,6 +1161,9 @@ body.lock {
 }
 
 .tabs-slide__body {
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
   max-width: 285px;
   margin: 0 auto;
 }
@@ -1801,9 +1805,13 @@ body.lock {
   margin: 0px 0px 10px 0px;
 }
 
-.contact-body__check span {
+.contact-body__check a {
   display: inline-block;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 15px;
+  color: #fff;
+  font-family: "Roboto", serif;
+  margin: 0px 0px 0px 5px;
 }
 
 .contact-body__check input {
@@ -2433,10 +2441,13 @@ textarea.input {
 @media (max-width: 924px) {
   .header__burger {
     display: block;
-    position: relative;
+    position: fixed;
     width: 30px;
     height: 20px;
-    z-index: 4;
+    top: 34px;
+    right: 4.3%;
+    z-index: 5;
+    cursor: pointer;
   }
 
   .header__burger span {
@@ -2507,6 +2518,7 @@ textarea.input {
     -webkit-transition: all 0.6s ease;
     -o-transition: all 0.6s ease;
     transition: all 0.6s ease;
+    z-index: 4;
   }
 
   .header__menu.active {

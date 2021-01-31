@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
 	$('.header__burger').click(function (event) {
 		$('.header__burger,.header__menu').toggleClass('active');
@@ -357,7 +358,6 @@ $(document).ready(
 				320: {
 					slidesPerView: 1,
 					spaceBetween: 10,
-					autoHeight: true,
 				},
 				768: {
 					slidesPerView: 2,
@@ -561,7 +561,7 @@ function scrollIt(
 
 
 friends.addEventListener('click', () => {
-    scrollIt(catalog, 800, 'linear', () => { console.log("скролл завершился") });
+    scrollIt(play, 800, 'linear', () => { console.log("скролл завершился") });
 });
 
 aboutUs.addEventListener('click', () => {
@@ -579,6 +579,10 @@ showCatalog.addEventListener('click', () => {
 topScroll.addEventListener('click', () => {
     scrollIt(header, 800, 'linear', () => { console.log("скролл завершился") });
 });
+
+tops.addEventListener('click', () => {
+    scrollIt(header, 800, 'linear', () => { console.log("скролл завершился") });
+});
 // ==========================================
 // </ПЛАВНЫЙ СКРОЛЛ ЯКОРНЫХ ССЫЛОК>
 // ==========================================
@@ -587,6 +591,14 @@ topScroll.addEventListener('click', () => {
 
 // ==========================================
 // <ВЫДЕЛЕНИЕ АКТИВНОГО МЕНЮ>
+// ==========================================
+// $('.tabs__item').click(function () {
+//     $('.__active').removeClass('__active');
+//     $(this).addClass('__active');
+//     var tab = $(this).attr('href');
+//     $(tab).fadeIn(400);
+// });
+
 // ==========================================
 let checkLink = document.querySelector('.contact-body__check');
 checkLink.addEventListener("click", function (e) {
@@ -645,6 +657,15 @@ function ibg() {
     }
 }
 ibg();
+
+// function ibg() {
+//     $.each($('.ibg'), function (index, val) {
+//         if ($(this).find('img').length > 0) {
+//             $(this).css('background-image', 'url("' + $(this).find('img').attr('src') + '")');
+//         }
+//     });
+// }
+// ibg();
 // ==========================================
 // <2 СКРИПТА НА ИЗОБРАЖЕНИЯ>
 // ==========================================
