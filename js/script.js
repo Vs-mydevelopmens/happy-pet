@@ -228,6 +228,8 @@ var $tabs = function (target) {
 };
 
 $tabs('.tabs');
+
+
 // BildSlider
 let sliders = document.querySelectorAll('._swiper');
 if (sliders) {
